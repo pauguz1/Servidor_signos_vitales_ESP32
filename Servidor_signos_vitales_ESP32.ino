@@ -1,41 +1,20 @@
 /*
  WiFi Web Server LED Blink
 
- A simple web server that lets you blink an LED via the web.
- This sketch will print the IP address of your WiFi Shield (once connected)
- to the Serial monitor. From there, you can open that address in a web browser
- to turn on and off the LED on pin 5.
-
- If the IP address of your shield is yourAddress:
- http://yourAddress/H turns the LED on
- http://yourAddress/L turns it off
-
- This example is written for a network using WPA encryption. For
- WEP or WPA, change the Wifi.begin() call accordingly.
-
- Circuit:
- * WiFi shield attached
- * LED attached to pin 5
-
  created for arduino 25 Nov 2012
- by Tom Igoe
-
-ported for sparkfun esp32 
-31.01.2017 by Jan Hendrik Berlin
- 
  */
 
 #include <WiFi.h>
 
-// datos de tu red Wifi 
+// datos de tu red Wifi -----------------------------------------------------------------------------------------------
 const char* ssid     = "Guzman";
 const char* password = "guzman321";
 
 
 
-//variables que les debes asignar un valor para que se muestren en la pagina web
+//variables que les debes asignar un valor para que se muestren en la pagina web---------------------------------------------------
 
-//ip que debes entrar cuando te conectes al esp32 = 192.168.4.1
+//ip que debes entrar cuando te conectes al esp32 al punto de acceso = 192.168.4.1 -----------------
 int frecuenciaCardiaca;
 int spo;
 float temperatura;
@@ -56,7 +35,7 @@ void setup()
     Serial.print("Connecting to ");
     Serial.println(ssid);
 
-    WiFi.softAP("paul", "12345678"); // Nombre y contraseña del punto de acceso del esp32
+    WiFi.softAP("paul", "12345678"); // Nombre y contraseña del punto de acceso del esp32  ------------------------------------------------------------------
     WiFi.begin(ssid, password);//nombre y contra del wifi de mi casa
     
 
@@ -106,10 +85,11 @@ void loop(){
 
             html += "<style>";
             html+="html,body{width:100%;height:100%; display:flex; background:black;}";
+            
             html+=".contenedor{";
             html+="width:500px;";
-            html+="height:500px;";
-            html+="background:#397aab;";
+            html+="height:600px;";
+            html+="background:#397aab;";//--- color del formulario
             html+="left:0; right:0; top:0; bottom:0; margin:auto;";
             html+="color:#ffffff;";
             html+="display:flex; justify-content:center; align-items:center; flex-direction: column;";
@@ -118,6 +98,7 @@ void loop(){
             html+="font-family: 'Roboto', sans-serif;";
             html+="";
             html+="}";
+            
             html+="@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap');";
             html += " </style>";
             html += "</head>";
@@ -129,6 +110,9 @@ void loop(){
             html+="<h3>SPO2:"+(String)spo+"</h3>";
             html+="<h3>Temperatura:"+(String)temperatura+"</h3>";
             html+="<h4>IP en red:"+WiFi.localIP().toString()+"</h4>";
+            String valor=digitalRead(5)==true?"Encendido":"Apagado";
+            html+="<h4>Led:"+valor+"</h4>";
+            html+="<button onclick=\"window.location='H'\">Led</button>";
             html+="</div>";
             
             
@@ -153,7 +137,7 @@ void loop(){
         //www.google.com <-- es la ip
         // ip/carros <-- 'carros es el pat'
         if (currentLine.endsWith("GET /H")) {
-          digitalWrite(5, HIGH);               // GET /H turns the LED on
+          digitalWrite(5, !digitalRead(5));               // GET /H turns the LED on
         }
         if (currentLine.endsWith("GET /L")) {
           digitalWrite(5, LOW);                // GET /L turns the LED off
